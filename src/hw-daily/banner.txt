@@ -1,0 +1,9 @@
+// ==UserScript==
+// @name         Hero Wars — Daily Automation
+// @namespace    hero-wars-tools
+// @version      1.0.4
+// @description  Dungeon and tower daily automation. Main-account safe: UI clicks only, human-like timing.
+// @match        https://www.hero-wars.com/*
+// @match        https://hero-wars.com/*
+// @grant        none
+// ==/UserScript==
