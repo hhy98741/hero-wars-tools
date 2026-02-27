@@ -1,8 +1,9 @@
 import { DUNGEON_CONFIG, TOWER_CONFIG, CHEST_FLOORS } from './config.js';
-import { dungeonState, towerState } from './state.js';
-import { dungeonLog, towerLog, getCanvas } from './utils.js';
+import { dungeonState, towerState, dailyState } from './state.js';
+import { dungeonLog, towerLog, dailyLog, getCanvas } from './utils.js';
 import { dungeonStart, dungeonStop, dungeonToggle, startDungeonCoordMode } from './dungeon.js';
 import { towerStart, towerStop, towerToggle, startTowerCoordMode } from './tower.js';
+import { dailyStart, dailyStop, dailyToggle } from './daily.js';
 import { buildOverlay, dungeonUpdateOverlay, towerUpdateOverlay } from './overlay.js';
 import { installXhrObserver } from './xhr.js';
 
@@ -15,6 +16,9 @@ import { installXhrObserver } from './xhr.js';
 // HWTower.start()    — start tower run
 // HWTower.stop()     — stop tower run
 // HWTower.status()   — show tower state
+// HWDaily.start()    — start daily chore run
+// HWDaily.stop()     — stop daily chore run
+// HWDaily.status()   — show daily state
 // ═════════════════════════════════════════════════════════════════════════
 
 window.HWDungeon = {
@@ -48,6 +52,21 @@ window.HWTower = {
     },
 };
 
+window.HWDaily = {
+    start: dailyStart,
+    stop:  () => dailyStop('Stopped by user'),
+    status() {
+        const elapsed = dailyState.sessionStart
+            ? Math.round((Date.now() - dailyState.sessionStart) / 60_000) : 0;
+        dailyLog('Status:', {
+            running:     dailyState.running,
+            currentStep: dailyState.currentStep,
+            stepsDone:   dailyState.stepsDone,
+            elapsedMin:  elapsed,
+        });
+    },
+};
+
 // ═════════════════════════════════════════════════════════════════════════
 // KEYBOARD SHORTCUTS
 // ═════════════════════════════════════════════════════════════════════════
@@ -56,8 +75,9 @@ function installKeyboardShortcuts() {
     document.addEventListener('keydown', e => {
         if (e.key === 'F9') { e.preventDefault(); dungeonToggle(); }
         if (e.key === 'F8') { e.preventDefault(); towerToggle(); }
+        if (e.key === 'F7') { e.preventDefault(); dailyToggle(); }
     });
-    dungeonLog('Keyboard shortcuts: F9 = Dungeon, F8 = Tower');
+    dungeonLog('Keyboard shortcuts: F9 = Dungeon, F8 = Tower, F7 = Daily');
 }
 
 // ═════════════════════════════════════════════════════════════════════════
@@ -71,7 +91,7 @@ function init() {
     const poll = setInterval(() => {
         if (document.body) {
             clearInterval(poll);
-            buildOverlay(dungeonToggle, towerToggle);
+            buildOverlay(dungeonToggle, towerToggle, dailyToggle);
 
             if (DUNGEON_CONFIG.coordMode) {
                 dungeonUpdateOverlay('Coord Mode');
@@ -90,7 +110,7 @@ function init() {
             }
 
             if (!DUNGEON_CONFIG.coordMode && !TOWER_CONFIG.coordMode) {
-                dungeonLog('Hero Wars Daily Automation v1.0.4 ready. F9 = Dungeon · F8 = Tower.');
+                dungeonLog('Hero Wars Daily Automation v1.0.5 ready. F9 = Dungeon · F8 = Tower · F7 = Daily.');
             }
         }
     }, 200);

@@ -1,3 +1,5 @@
+import { dailyState } from './state.js';
+
 // ═════════════════════════════════════════════════════════════════════════
 // DUNGEON CONFIG
 // ═════════════════════════════════════════════════════════════════════════
@@ -149,3 +151,138 @@ export const TOWER_BUTTONS = {
     collect_all:        { x: 0.4820, y: 0.8660 },  // Collect all rewards
     // close rewards and exit tower use pressEscape()
 };
+
+// ═════════════════════════════════════════════════════════════════════════
+// DAILY RUN CONFIG
+// ═════════════════════════════════════════════════════════════════════════
+
+export const DAILY_CONFIG = {
+    timing: {
+        menuOpen:  { min: 1300, max: 1800 }, // opening a panel within the current area
+        areaEnter: { min: 1800, max: 2500 }, // navigating to a new game area
+        action:    { min: 1300, max: 1800 }, // after a collect / open / confirm click
+        click:     { min: 1000, max: 1500 }, // quick UI response
+        escape:    { min: 1000, max: 1500 }, // after pressing Escape
+        raidStart: { min: 4000, max: 6000 }, // after RAID ALL — wait for Show All to appear
+        showAll:   { min: 5000, max: 8000 }, // after Show All — wait for battles to finish
+    },
+};
+
+// Shorthand so DAILY_STEPS stays readable
+const DT = DAILY_CONFIG.timing;
+
+// ─────────────────────────────────────────────────────────────────────────
+// DAILY STEPS — sequential click/escape actions for the daily chore run.
+// Each step: { type, label, x?, y?, wait? }
+//   type 'section' — log a section header, no click, no wait
+//   type 'click'   — clickAt(x, y), then wait
+//   type 'escape'  — pressEscape(), then wait
+// ─────────────────────────────────────────────────────────────────────────
+
+export const DAILY_STEPS = [
+
+    // ── Free Energy ───────────────────────────────────────────────────────
+    { type: 'section', label: 'Free Energy' },
+    { type: 'click',  label: 'Opening Daily Quests',    x: 0.1728, y: 0.0549, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Collecting free energy',  x: 0.6701, y: 0.3135, wait: DT.action    },
+    { type: 'escape', label: 'Closing Daily Quests',                           wait: DT.escape    },
+
+    // ── Mail ──────────────────────────────────────────────────────────────
+    { type: 'section', label: 'Mail' },
+    { type: 'click',  label: 'Opening mail',            x: 0.1793, y: 0.1265, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Collecting all mail',     x: 0.4988, y: 0.8381, wait: DT.action    },
+    { type: 'click',  label: 'Show all mail',           x: 0.4988, y: 0.7833, wait: DT.click     },
+    { type: 'click',  label: 'Collecting mail results', x: 0.4988, y: 0.7833, wait: DT.action    },
+    { type: 'escape', label: 'Closing mail',                                   wait: DT.escape    },
+
+    // ── Gifts ─────────────────────────────────────────────────────────────
+    { type: 'section', label: 'Gifts' },
+    { type: 'click',  label: 'Opening gifts',           x: 0.6879, y: 0.8856, wait: DT.menuOpen  },
+    { type: 'click',  label: 'View sendable gifts',     x: 0.3911, y: 0.6549, wait: DT.action    },
+    { type: 'click',  label: 'Sending presents',        x: 0.4923, y: 0.5684, wait: DT.action    },
+    { type: 'escape', label: 'Closing send gifts',                             wait: DT.escape    },
+    { type: 'escape', label: 'Closing gifts menu',                             wait: DT.escape    },
+
+    // ── Airship ───────────────────────────────────────────────────────────
+    { type: 'section', label: 'Airship' },
+    { type: 'click',  label: 'Entering airship',            x: 0.4030, y: 0.1628, wait: DT.areaEnter },
+    { type: 'click',  label: "Opening Valkyrie's Favor",    x: 0.4993, y: 0.2781, wait: DT.menuOpen  },
+    { type: 'click',  label: "Collecting Valkyrie's gifts", x: 0.4958, y: 0.7274, wait: DT.action    },
+    { type: 'escape', label: "Closing Valkyrie's Favor",                          wait: DT.escape    },
+    { type: 'click',  label: 'Opening expedition map',      x: 0.4993, y: 0.6865, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Claiming expedition rewards', x: 0.5062, y: 0.8944, wait: DT.action,
+      condition: () => dailyState.expeditionRewardsAvailable },
+    { type: 'click',  label: 'Collecting expedition loot',  x: 0.5000, y: 0.7374, wait: DT.action,
+      condition: () => dailyState.expeditionRewardsAvailable },
+    { type: 'click',  label: 'Allocating heroes',           x: 0.4968, y: 0.8977, wait: DT.action    },
+    { type: 'escape', label: 'Closing expedition map',                             wait: DT.escape    },
+    { type: 'escape', label: 'Exiting airship',                                    wait: DT.escape    },
+
+    // ── Soul Atrium ───────────────────────────────────────────────────────
+    { type: 'section', label: 'Soul Atrium' },
+    { type: 'click',  label: 'Entering Soul Atrium',   x: 0.5249, y: 0.4279, wait: DT.areaEnter },
+    { type: 'click',  label: 'Claiming soul crystal',  x: 0.9407, y: 0.2056, wait: DT.action    },
+    { type: 'escape', label: 'Exiting Soul Atrium',                           wait: DT.escape    },
+
+    // ── Outland ───────────────────────────────────────────────────────────
+    { type: 'section', label: 'Outland' },
+    { type: 'click',  label: 'Entering Outland',        x: 0.7022, y: 0.2121, wait: DT.areaEnter },
+    // Boss 1
+    { type: 'click',  label: 'Boss 1: claiming reward', x: 0.2370, y: 0.5433, wait: DT.action    },
+    { type: 'click',  label: 'Boss 1: opening chests',  x: 0.4943, y: 0.6251, wait: DT.click     },
+    { type: 'click',  label: 'Boss 1: opening chest',   x: 0.4933, y: 0.6595, wait: DT.action    },
+    { type: 'click',  label: 'Back to Outland',         x: 0.9674, y: 0.1228, wait: DT.click     },
+    // Boss 2
+    { type: 'click',  label: 'Going to boss 2',         x: 0.8336, y: 0.8363, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Boss 2: claiming reward', x: 0.2370, y: 0.5433, wait: DT.action    },
+    { type: 'click',  label: 'Boss 2: opening chests',  x: 0.4943, y: 0.6251, wait: DT.click     },
+    { type: 'click',  label: 'Boss 2: opening chest',   x: 0.4933, y: 0.6595, wait: DT.action    },
+    { type: 'click',  label: 'Back to Outland',         x: 0.9674, y: 0.1228, wait: DT.click     },
+    // Boss 3
+    { type: 'click',  label: 'Going to boss 3',         x: 0.8360, y: 0.8288, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Boss 3: claiming reward', x: 0.2370, y: 0.5433, wait: DT.action    },
+    { type: 'click',  label: 'Boss 3: opening chests',  x: 0.4943, y: 0.6251, wait: DT.click     },
+    { type: 'click',  label: 'Boss 3: opening chest',   x: 0.4933, y: 0.6595, wait: DT.action    },
+    { type: 'click',  label: 'Back to Outland',         x: 0.9674, y: 0.1228, wait: DT.click     },
+    { type: 'escape', label: 'Exiting Outland',                                wait: DT.escape    },
+
+    // ── Guild ─────────────────────────────────────────────────────────────
+    { type: 'section', label: 'Guild' },
+    { type: 'click',  label: 'Entering Guild',  x: 0.0494, y: 0.8558, wait: DT.areaEnter },
+    { type: 'escape', label: 'Exiting Guild',                          wait: DT.escape    },
+
+    // ── Sanctuary ─────────────────────────────────────────────────────────
+    { type: 'section', label: 'Sanctuary' },
+    { type: 'click',  label: 'Entering Sanctuary',      x: 0.5975, y: 0.1991, wait: DT.areaEnter },
+    { type: 'click',  label: 'Opening Pet Summoning',   x: 0.7284, y: 0.7358, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Summoning pet',           x: 0.6622, y: 0.8753, wait: DT.action    },
+    { type: 'escape', label: 'Accepting summon result',                        wait: DT.escape    },
+    { type: 'escape', label: 'Exiting Pet Summoning',                          wait: DT.escape    },
+    { type: 'escape', label: 'Exiting Sanctuary',                              wait: DT.escape    },
+
+    // ── Titan Valley ──────────────────────────────────────────────────────
+    { type: 'section', label: 'Titan Valley' },
+    { type: 'click',  label: 'Entering Titan Valley',         x: 0.3783, y: 0.3358, wait: DT.areaEnter },
+    // Altar of Elements
+    { type: 'click',  label: 'Entering Altar of Elements',   x: 0.4914, y: 0.7842, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Opening element',              x: 0.6257, y: 0.8670, wait: DT.action    },
+    { type: 'escape', label: 'Accepting element result',                            wait: DT.escape    },
+    { type: 'escape', label: 'Exiting Altar of Elements',                           wait: DT.escape    },
+    // Tournament of Elements
+    { type: 'click',  label: 'Entering Tournament',          x: 0.2543, y: 0.3088, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Opening Tournament Raid',      x: 0.6281, y: 0.7684, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Starting RAID ALL',            x: 0.5605, y: 0.7684, wait: DT.raidStart },
+    { type: 'click',  label: 'Show all battles',             x: 0.4969, y: 0.8337, wait: DT.showAll   },
+    { type: 'click',  label: 'Viewing battle rewards',       x: 0.4998, y: 0.8316, wait: DT.action    },
+    { type: 'click',  label: 'Claiming battle rewards',      x: 0.4953, y: 0.6586, wait: DT.action    },
+    { type: 'click',  label: 'Opening tournament chest',     x: 0.9373, y: 0.6949, wait: DT.menuOpen  },
+    { type: 'click',  label: 'Claiming tournament rewards',  x: 0.4933, y: 0.8000, wait: DT.action    },
+    { type: 'click',  label: 'Collecting all rewards',       x: 0.4988, y: 0.7898, wait: DT.action    },
+    { type: 'escape', label: 'Exiting tournament',                                  wait: DT.escape    },
+    { type: 'escape', label: 'Exiting Titan Valley',                                wait: DT.escape    },
+
+    // ── Guild War ─────────────────────────────────────────────────────────
+    { type: 'section', label: 'Guild War' },
+    { type: 'click',  label: 'Entering Guild War', x: 0.7195, y: 0.4242, wait: DT.areaEnter },
+    { type: 'escape', label: 'Exiting Guild War',                          wait: DT.escape    },
+];

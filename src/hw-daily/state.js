@@ -17,3 +17,11 @@ export const towerState = {
     chestsOpened:   0,
     statusInterval: null,
 };
+
+export const dailyState = {
+    running:                    false,
+    sessionStart:               null,
+    stepsDone:                  0,
+    currentStep:                '',
+    expeditionRewardsAvailable: null,  // null = unknown, true/false set by expeditionGet XHR
+};

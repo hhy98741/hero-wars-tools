@@ -1,5 +1,5 @@
-import { dungeonState } from './state.js';
-import { dungeonLog, towerLog } from './utils.js';
+import { dungeonState, dailyState } from './state.js';
+import { dungeonLog, towerLog, dailyLog } from './utils.js';
 import { dungeonUpdateOverlay } from './overlay.js';
 import { dungeonOnBattleStarted, dungeonOnBattleEnded, dungeonOnLevelComplete, dungeonExtractFloorData } from './dungeon.js';
 import { towerOnNextChest, towerOnChestOpened } from './tower.js';
@@ -22,6 +22,7 @@ export function installXhrObserver() {
                 const json = JSON.parse(this.responseText);
                 dungeonHandleResponse(json, requestBody);
                 towerHandleResponse(json, requestBody);
+                dailyHandleResponse(json, requestBody);
             } catch (_) {}
         });
         return original.apply(this, arguments);
@@ -138,6 +139,35 @@ function towerHandleResponse(json, requestBody) {
 
         } else if (actionName === 'tower_farmPointRewards') {
             towerLog('tower_farmPointRewards:', data);
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// DAILY XHR HANDLER
+// ─────────────────────────────────────────────────────────────────────────
+
+function dailyHandleResponse(json, requestBody) {
+    let calls;
+    try {
+        const text = (requestBody instanceof ArrayBuffer || ArrayBuffer.isView(requestBody))
+            ? new TextDecoder().decode(requestBody)
+            : requestBody;
+        calls = JSON.parse(text)?.calls;
+    } catch (_) { return; }
+    if (!calls?.length) return;
+
+    for (const call of calls) {
+        const { name: actionName, ident } = call;
+        const resultEntry = json?.results?.find(r => r.ident === ident);
+        const data = resultEntry?.result?.response;
+
+        if (actionName === 'expeditionGet' && data) {
+            // data is a map of expeditionId → expedition object.
+            // status 2 means the expedition is complete and has rewards to claim.
+            const hasRewards = Object.values(data).some(exp => exp?.status === 2);
+            dailyState.expeditionRewardsAvailable = hasRewards;
+            dailyLog(`expeditionGet: rewards available = ${hasRewards}`);
         }
     }
 }

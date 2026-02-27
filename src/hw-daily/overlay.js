@@ -1,11 +1,12 @@
-import { dungeonState, towerState } from './state.js';
+import { dungeonState, towerState, dailyState } from './state.js';
 import { CHEST_FLOORS } from './config.js';
 
 let overlayEl;
 let dungeonBtnToggle, dungeonLblStatus, dungeonLblFloor, dungeonLblFloors, dungeonLblTime, dungeonSpinner;
 let towerBtnToggle,   towerLblStatus,  towerLblChest,   towerLblTime,   towerSpinner;
+let dailyBtnToggle,   dailyLblStatus,  dailyLblStep,    dailyLblTime,   dailySpinner;
 
-export function buildOverlay(onDungeonToggle, onTowerToggle) {
+export function buildOverlay(onDungeonToggle, onTowerToggle, onDailyToggle) {
     const el = document.createElement('div');
     el.id = 'hw-daily-overlay';
     el.innerHTML = `
@@ -36,6 +37,18 @@ export function buildOverlay(onDungeonToggle, onTowerToggle) {
                 <span class="hwo-spinner hwo-hidden" id="hwt-spinner"></span>
                 <button id="hwt-toggle">▶</button>
                 <span class="hwo-hint">F8</span>
+            </div>
+            <div id="hwo-daily-row">
+                <span id="hwdy-label">Daily</span>
+                <span class="hwo-sep">·</span>
+                <span id="hwdy-step">—</span>
+                <span class="hwo-sep">·</span>
+                <span id="hwdy-time">0 min</span>
+                <span class="hwo-sep">·</span>
+                <span id="hwdy-status">Ready</span>
+                <span class="hwo-spinner hwo-hidden" id="hwdy-spinner"></span>
+                <button id="hwdy-toggle">▶</button>
+                <span class="hwo-hint">F7</span>
             </div>
         </div>
     `;
@@ -80,15 +93,18 @@ export function buildOverlay(onDungeonToggle, onTowerToggle) {
         }
         #hwd-label   { color: #f0c060; font-weight: bold; min-width: 56px; }
         #hwt-label   { color: #60c0f0; font-weight: bold; min-width: 56px; }
+        #hwdy-label  { color: #60f0a0; font-weight: bold; min-width: 56px; }
         #hwd-floor   { color: #fff; font-weight: bold; }
         #hwd-floors  { color: #aaa; }
         #hwd-time, #hwt-time { color: #aaa; }
         #hwd-status  { color: #f0c060; min-width: 76px; }
         #hwt-status  { color: #60c0f0; min-width: 76px; }
+        #hwdy-status { color: #60f0a0; min-width: 76px; }
         #hwt-chest   { color: #fff; font-weight: bold; }
         .hwo-sep  { color: #444; }
         .hwo-hint { color: #444; font-size: 11px; }
-        #hwd-toggle, #hwt-toggle {
+        #hwdy-step { color: #fff; font-weight: bold; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+        #hwdy-toggle, #hwd-toggle, #hwt-toggle {
             padding: 2px 8px;
             background: #2a5a2a;
             color: #7f7;
@@ -98,8 +114,8 @@ export function buildOverlay(onDungeonToggle, onTowerToggle) {
             font-size: 12px;
             cursor: pointer;
         }
-        #hwd-toggle:hover, #hwt-toggle:hover { background: #3a7a3a; }
-        #hwd-toggle.running, #hwt-toggle.running {
+        #hwdy-toggle:hover, #hwd-toggle:hover, #hwt-toggle:hover { background: #3a7a3a; }
+        #hwdy-toggle.running, #hwd-toggle.running, #hwt-toggle.running {
             background: #5a2a2a;
             color: #f77;
             border-color: #9a4a4a;
@@ -137,11 +153,19 @@ export function buildOverlay(onDungeonToggle, onTowerToggle) {
     dungeonSpinner = el.querySelector('#hwd-spinner');
     towerSpinner   = el.querySelector('#hwt-spinner');
 
+    dailyBtnToggle = el.querySelector('#hwdy-toggle');
+    dailyLblStatus = el.querySelector('#hwdy-status');
+    dailyLblStep   = el.querySelector('#hwdy-step');
+    dailyLblTime   = el.querySelector('#hwdy-time');
+    dailySpinner   = el.querySelector('#hwdy-spinner');
+
     dungeonBtnToggle.addEventListener('click', e => { e.stopPropagation(); onDungeonToggle(); });
     towerBtnToggle.addEventListener('click',   e => { e.stopPropagation(); onTowerToggle(); });
+    dailyBtnToggle.addEventListener('click',   e => { e.stopPropagation(); onDailyToggle(); });
 
     dungeonUpdateOverlay();
     towerUpdateOverlay();
+    dailyUpdateOverlay();
 }
 
 export function dungeonUpdateOverlay(statusMsg) {
@@ -174,4 +198,18 @@ export function towerUpdateOverlay(statusMsg) {
     towerBtnToggle.textContent = towerState.running ? '■' : '▶';
     towerBtnToggle.className   = towerState.running ? 'running' : '';
     towerSpinner.classList.toggle('hwo-hidden', !towerState.running);
+}
+
+export function dailyUpdateOverlay(statusMsg) {
+    if (!overlayEl) return;
+    const elapsed = dailyState.sessionStart
+        ? Math.round((Date.now() - dailyState.sessionStart) / 60_000) : 0;
+    dailyLblStep.textContent = dailyState.currentStep || '—';
+    dailyLblTime.textContent = `${elapsed} min`;
+    if (statusMsg)                dailyLblStatus.textContent = statusMsg;
+    else if (dailyState.running)  dailyLblStatus.textContent = 'Running';
+    else                          dailyLblStatus.textContent = 'Ready';
+    dailyBtnToggle.textContent = dailyState.running ? '■' : '▶';
+    dailyBtnToggle.className   = dailyState.running ? 'running' : '';
+    dailySpinner.classList.toggle('hwo-hidden', !dailyState.running);
 }

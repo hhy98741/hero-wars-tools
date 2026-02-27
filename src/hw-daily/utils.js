@@ -14,6 +14,12 @@ export function towerLog(msg, data) {
         : console.log('[HW-Tower]', msg);
 }
 
+export function dailyLog(msg, data) {
+    data !== undefined
+        ? console.log('[HW-Daily]', msg, data)
+        : console.log('[HW-Daily]', msg);
+}
+
 export function getCanvas() {
     return document.querySelector('canvas');
 }
