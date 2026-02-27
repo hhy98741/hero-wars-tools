@@ -171,6 +171,9 @@ export const DAILY_CONFIG = {
 // Shorthand so DAILY_STEPS stays readable
 const DT = DAILY_CONFIG.timing;
 
+// Tournament of Elements only runs Monday–Friday (no tournament on weekends)
+const isWeekday = () => { const d = new Date().getDay(); return d >= 1 && d <= 5; };
+
 // ─────────────────────────────────────────────────────────────────────────
 // DAILY STEPS — sequential click/escape actions for the daily chore run.
 // Each step: { type, label, x?, y?, wait? }
@@ -268,17 +271,17 @@ export const DAILY_STEPS = [
     { type: 'click',  label: 'Opening element',              x: 0.6257, y: 0.8670, wait: DT.action    },
     { type: 'escape', label: 'Accepting element result',                            wait: DT.escape    },
     { type: 'escape', label: 'Exiting Altar of Elements',                           wait: DT.escape    },
-    // Tournament of Elements
-    { type: 'click',  label: 'Entering Tournament',          x: 0.2543, y: 0.3088, wait: DT.menuOpen  },
-    { type: 'click',  label: 'Opening Tournament Raid',      x: 0.6281, y: 0.7684, wait: DT.menuOpen  },
-    { type: 'click',  label: 'Starting RAID ALL',            x: 0.5605, y: 0.7684, wait: DT.raidStart },
-    { type: 'click',  label: 'Show all battles',             x: 0.4969, y: 0.8337, wait: DT.showAll   },
-    { type: 'click',  label: 'Viewing battle rewards',       x: 0.4998, y: 0.8316, wait: DT.action    },
-    { type: 'click',  label: 'Claiming battle rewards',      x: 0.4953, y: 0.6586, wait: DT.action    },
-    { type: 'click',  label: 'Opening tournament chest',     x: 0.9373, y: 0.6949, wait: DT.menuOpen  },
-    { type: 'click',  label: 'Claiming tournament rewards',  x: 0.4933, y: 0.8000, wait: DT.action    },
-    { type: 'click',  label: 'Collecting all rewards',       x: 0.4988, y: 0.7898, wait: DT.action    },
-    { type: 'escape', label: 'Exiting tournament',                                  wait: DT.escape    },
+    // Tournament of Elements (weekdays only — no tournament on Sat/Sun)
+    { type: 'click',  label: 'Entering Tournament',          x: 0.2543, y: 0.3088, wait: DT.menuOpen,  condition: isWeekday },
+    { type: 'click',  label: 'Opening Tournament Raid',      x: 0.6281, y: 0.7684, wait: DT.menuOpen,  condition: isWeekday },
+    { type: 'click',  label: 'Starting RAID ALL',            x: 0.5605, y: 0.7684, wait: DT.raidStart, condition: isWeekday },
+    { type: 'click',  label: 'Show all battles',             x: 0.4969, y: 0.8337, wait: DT.showAll,   condition: isWeekday },
+    { type: 'click',  label: 'Viewing battle rewards',       x: 0.4998, y: 0.8316, wait: DT.action,    condition: isWeekday },
+    { type: 'click',  label: 'Claiming battle rewards',      x: 0.4953, y: 0.6586, wait: DT.action,    condition: isWeekday },
+    { type: 'click',  label: 'Opening tournament chest',     x: 0.9373, y: 0.6949, wait: DT.menuOpen,  condition: isWeekday },
+    { type: 'click',  label: 'Claiming tournament rewards',  x: 0.4933, y: 0.8000, wait: DT.action,    condition: isWeekday },
+    { type: 'click',  label: 'Collecting all rewards',       x: 0.4988, y: 0.7898, wait: DT.action,    condition: isWeekday },
+    { type: 'escape', label: 'Exiting tournament',                                  wait: DT.escape,    condition: isWeekday },
     { type: 'escape', label: 'Exiting Titan Valley',                                wait: DT.escape    },
 
     // ── Guild War ─────────────────────────────────────────────────────────
