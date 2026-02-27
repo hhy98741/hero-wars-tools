@@ -12,19 +12,17 @@ export function buildOverlay(onDungeonToggle, onTowerToggle, onDailyToggle) {
     el.innerHTML = `
         <div id="hwo-brand">HW</div>
         <div id="hwo-rows">
-            <div id="hwo-dungeon-row">
-                <span id="hwd-label">Dungeon</span>
+            <div id="hwo-daily-row">
+                <span id="hwdy-label">Daily</span>
                 <span class="hwo-sep">·</span>
-                <span id="hwd-floor">Floor —</span>
+                <span id="hwdy-step">—</span>
                 <span class="hwo-sep">·</span>
-                <span id="hwd-floors">0 floors</span>
+                <span id="hwdy-time">0 min</span>
                 <span class="hwo-sep">·</span>
-                <span id="hwd-time">0 min</span>
-                <span class="hwo-sep">·</span>
-                <span id="hwd-status">Ready</span>
-                <span class="hwo-spinner hwo-hidden" id="hwd-spinner"></span>
-                <button id="hwd-toggle">▶</button>
-                <span class="hwo-hint">F9</span>
+                <span id="hwdy-status">Ready</span>
+                <span class="hwo-spinner hwo-hidden" id="hwdy-spinner"></span>
+                <button id="hwdy-toggle">▶</button>
+                <span class="hwo-hint">F7</span>
             </div>
             <div id="hwo-tower-row">
                 <span id="hwt-label">Tower</span>
@@ -38,17 +36,19 @@ export function buildOverlay(onDungeonToggle, onTowerToggle, onDailyToggle) {
                 <button id="hwt-toggle">▶</button>
                 <span class="hwo-hint">F8</span>
             </div>
-            <div id="hwo-daily-row">
-                <span id="hwdy-label">Daily</span>
+            <div id="hwo-dungeon-row">
+                <span id="hwd-label">Dungeon</span>
                 <span class="hwo-sep">·</span>
-                <span id="hwdy-step">—</span>
+                <span id="hwd-floor">Floor —</span>
                 <span class="hwo-sep">·</span>
-                <span id="hwdy-time">0 min</span>
+                <span id="hwd-floors">0 floors</span>
                 <span class="hwo-sep">·</span>
-                <span id="hwdy-status">Ready</span>
-                <span class="hwo-spinner hwo-hidden" id="hwdy-spinner"></span>
-                <button id="hwdy-toggle">▶</button>
-                <span class="hwo-hint">F7</span>
+                <span id="hwd-time">0 min</span>
+                <span class="hwo-sep">·</span>
+                <span id="hwd-status">Ready</span>
+                <span class="hwo-spinner hwo-hidden" id="hwd-spinner"></span>
+                <button id="hwd-toggle">▶</button>
+                <span class="hwo-hint">F9</span>
             </div>
         </div>
     `;
@@ -86,20 +86,20 @@ export function buildOverlay(onDungeonToggle, onTowerToggle, onDailyToggle) {
             flex-direction: column;
             gap: 2px;
         }
-        #hwo-dungeon-row, #hwo-tower-row {
+        #hwo-daily-row, #hwo-tower-row, #hwo-dungeon-row {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        #hwd-label   { color: #f0c060; font-weight: bold; min-width: 56px; }
-        #hwt-label   { color: #60c0f0; font-weight: bold; min-width: 56px; }
         #hwdy-label  { color: #60f0a0; font-weight: bold; min-width: 56px; }
+        #hwt-label   { color: #60a8f0; font-weight: bold; min-width: 56px; }
+        #hwd-label   { color: #c060f0; font-weight: bold; min-width: 56px; }
         #hwd-floor   { color: #fff; font-weight: bold; }
         #hwd-floors  { color: #aaa; }
-        #hwd-time, #hwt-time { color: #aaa; }
-        #hwd-status  { color: #f0c060; min-width: 76px; }
-        #hwt-status  { color: #60c0f0; min-width: 76px; }
+        #hwdy-time, #hwt-time, #hwd-time { color: #aaa; }
         #hwdy-status { color: #60f0a0; min-width: 76px; }
+        #hwt-status  { color: #60a8f0; min-width: 76px; }
+        #hwd-status  { color: #c060f0; min-width: 76px; }
         #hwt-chest   { color: #fff; font-weight: bold; }
         .hwo-sep  { color: #444; }
         .hwo-hint { color: #444; font-size: 11px; }
