@@ -100,14 +100,14 @@ function dungeonChooseAttack() {
             return 'attack_nonprime';
         }
 
-        // Priority 2: neutral defender — always attack it
+        // Priority 2: neutral defender — attack the OTHER team instead
         if (primeDef === 'neutral') {
-            dungeonLog(`Attack: prime is neutral → attack_prime`);
-            return 'attack_prime';
+            dungeonLog(`Attack: prime is neutral → attack_nonprime`);
+            return 'attack_nonprime';
         }
         if (nonpDef === 'neutral') {
-            dungeonLog(`Attack: nonprime is neutral → attack_nonprime`);
-            return 'attack_nonprime';
+            dungeonLog(`Attack: nonprime is neutral → attack_prime`);
+            return 'attack_prime';
         }
 
         // Priority 3: no fire/neutral — alternate stronger/weaker each time
@@ -277,7 +277,8 @@ export function dungeonStart() {
 }
 
 export function dungeonStop(reason) {
-    dungeonState.running = false;
+    dungeonState.running       = false;
+    dungeonState.attackOptions = null;
     if (dungeonState.statusInterval) {
         clearInterval(dungeonState.statusInterval);
         dungeonState.statusInterval = null;

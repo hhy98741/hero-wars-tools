@@ -169,5 +169,6 @@ function dailyHandleResponse(json, requestBody) {
             dailyState.expeditionRewardsAvailable = hasRewards;
             dailyLog(`expeditionGet: rewards available = ${hasRewards}`);
         }
+
     }
 }

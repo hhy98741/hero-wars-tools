@@ -86,6 +86,7 @@ export function buildOverlay(onDungeonToggle, onTowerToggle, onDailyToggle) {
             flex-direction: column;
             gap: 2px;
         }
+        #hwo-tower-row { display: none; }
         #hwo-daily-row, #hwo-tower-row, #hwo-dungeon-row {
             display: flex;
             align-items: center;

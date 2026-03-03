@@ -44,3 +44,21 @@ HWDaily.start() / .stop() / .status()    // F7
 HWTower.start() / .stop() / .status()    // F8
 HWDungeon.start() / .stop() / .status()  // F9
 ```
+
+## Two Use Cases — Different Detection Requirements
+
+The codebase serves two distinct tracks with fundamentally different constraints. Do not mix approaches between them.
+
+### Track 1: Main Account — Grinding (anti-detection required)
+- Account cannot be banned — must be indistinguishable from a human player
+- **Must NOT** replay raw API calls; all API calls must come from the game's own code
+- **Must** use `element.click()` on real DOM buttons + passive XHR observation only
+- **Must** use randomized delays (`random(800ms, 3500ms)`), session length limits, and jitter
+- The current `hw-daily` tool follows this track: it clicks real DOM elements and observes XHR read-only
+
+### Track 2: Throwaway Account — Battle Combination Testing (no detection concern)
+- Iterates hero team combinations and records win rates; efficiency is the only priority
+- **Can** replay API calls directly (Playwright headless + `page.evaluate()` is fine)
+- Detection/banning is acceptable on this account
+
+See [`docs/README.md`](docs/README.md) for the full use-case overview, [`docs/automation-reference.md`](docs/automation-reference.md) for architecture details per track, and [`docs/anti-detection.md`](docs/anti-detection.md) for a ranked list of detectable signatures to avoid in Track 1.
